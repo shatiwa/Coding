@@ -1,15 +1,3 @@
-"""
-First, a few callback functions are defined. Then, those functions are passed to
-the Dispatcher and registered at their respective places.
-Then, the bot is started and runs until we press Ctrl-C on the command line.
-Usage:
-
-Example of a bot-user conversation using ConversationHandler.
-Send /start to initiate the conversation.
-Press Ctrl-C on the command line or send a signal to the process to stop the
-bot.
-"""
-
 from db import DB
 import sqlite3
 import logging
@@ -32,8 +20,8 @@ START, NAME, COLLEGE, SIDEPROJECT, LANGUAGE, FRAMEWORK,CONFIRM, CONFIDENT= range
 
 SIDEPROJECT_OPTIONS = ['Friend','Facebook','Whatsapp', 'LinkedIn']
 LANGUAGE_OPTIONS = ['Java', 'C', 'C++','c#','Javascript','Python','HTML','HTML5','PHP','SQL','Ruby']
-YES_NO_OPTIONS = ['Yes', 'No']
-#MEDIUM_OPTIONS = ['English','Hindi','Kannada']
+CONFIRM_OPTIONS = ['Yes', 'No']
+
 
 
 def start(update, context):
@@ -67,7 +55,7 @@ def college(update, context):
         logger.info("College: %s", update.message.text)
         update.message.reply_text(
             'How do you get to know about sideproject',
-            reply_markup=ReplyKeyboardRemove())
+            reply_markup=ReplyKeyboardMarkup([SIDEPROJECT_OPTIONS], one_time_keyboard=True))
 
     return SIDEPROJECT
 
@@ -91,7 +79,7 @@ def language(update, context):
     if(context.user_data['Language']in LANGUAGE_OPTIONS):
         logger.info("Language: %s",update.message.text)
         update.message.reply_text(
-            '''Do you know any framework ?''',
+            '''Do you know any framework ? Please list them''',
             reply_markup=ReplyKeyboardRemove())
     return FRAMEWORK
 
@@ -105,7 +93,7 @@ def framework(update, context):
         logger.info("Framework: %s", update.message.text)
         update.message.reply_text(
             'Have you done any project before ?',
-            reply_markup=ReplyKeyboardMarkup([DEAL_OPTIONS], one_time_keyboard=True))
+            reply_markup=ReplyKeyboardMarkup([CONFIRM_OPTIONS], one_time_keyboard=True))
 
     return CONFIRM
 
@@ -114,29 +102,22 @@ def confirm(update, context):
     context.user_data['Confirm'] = update.message.text
     user = update.message.from_user
     logger.info("Confirm: %s",update.message.text)
-
-    if context.user_data['Confirm'] == "Yes":
-        logger.info("Confirmation: %s", update.message.text)
        
-        update.message.reply_text(f'''
-		How confident are you ?''',
-                                  reply_markup=ReplyKeyboardMarkup([YES_NO_OPTIONS], one_time_keyboard=True))
-        return NAME
+    return NAME
 
 
 
 
 def main():
-    # will Create the Updater and pass it our bot's token.
-    # Make sure to set use_context=True to use the new context based callbacks
+  
 
     updater = Updater(
         os.getenv("TELEGRAM_TOKEN", ""), use_context=True)
 
-    # Get the dispatcher to register handlers
+
     dp = updater.dispatcher
 
-    # Add conversation handler with the states INFO, LOCATION, BIO, CLASSNAMES
+
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
 
@@ -161,22 +142,13 @@ def main():
 
     dp.add_handler(conv_handler)
 
-    # log all errors
-#    dp.add_error_handler(error)
 
-    # Start the Bot
     updater.start_polling()
 
-    #    press ctrl c for stopping the bot
-    # SIGTERM or SIGABRT. This should be used most of the time
-    # start_polling() is non-blocking and will stop the bot.
+   
     updater.idle()
-    # d.add_item(CITY, PINCODE, STANDARD, BOARD, MEDIUM, SUBJECTS, NUMBER, EMAIL, REQ, CONFIRM)
-    # print(CITY, PINCODE, STANDARD, BOARD, MEDIUM,
-    #       SUBJECTS, NUMBER, EMAIL, REQ, CONFIRM)
-
-    # d.get_items()
-
+    
 
 if __name__ == '__main__':
     main()
+
