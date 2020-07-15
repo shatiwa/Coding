@@ -21,6 +21,7 @@ START, NAME, COLLEGE, SIDEPROJECT, LANGUAGE, FRAMEWORK,CONFIRM, CONFIDENT= range
 SIDEPROJECT_OPTIONS = ['Friend','Facebook','Whatsapp', 'LinkedIn']
 LANGUAGE_OPTIONS = ['Java', 'C', 'C++','c#','Javascript','Python','HTML','HTML5','PHP','SQL','Ruby']
 CONFIRM_OPTIONS = ['Yes', 'No']
+CONFIDENT_OPTIONS= ['Very Confident','Confident Enough','Still Learning'];
 
 
 
@@ -97,15 +98,29 @@ def framework(update, context):
 
     return CONFIRM
 
-
 def confirm(update, context):
     context.user_data['Confirm'] = update.message.text
     user = update.message.from_user
     logger.info("Confirm: %s",update.message.text)
-       
-    return NAME
+    update.message.reply_text(
+            'Have confident are you about your programming skills?',
+            reply_markup=ReplyKeyboardMarkup([CONFIDENT_OPTIONS], one_time_keyboard=True))
+        
+    return CONFIDENT
 
+def confident(update, context):
+    context.user_data['Confident'] = update.message.text
+    user = update.message.from_user
+    logger.info("Confident: %s",update.message.text)
+    update.message.reply_text(
+            'Please share you github repository for future purpose.',
+	    reply_markup=ReplyKeyboardRemove())
+	
+    return level
 
+def level(update, context):
+	
+	
 
 
 def main():
